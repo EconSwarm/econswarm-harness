@@ -815,6 +815,36 @@ Source: [`packages/core/tools/src/types.ts:40`](../packages/core/tools/src/types
 
 Source: [`packages/core/session/src/types.ts:291`](../packages/core/session/src/types.ts)
 
+### `tool-financial-research/*`
+
+<a id="tool-financial-researchrun-end--log-only"></a>
+
+#### `tool-financial-research/run-end` — log-only
+
+```ts persistence-catalog
+/**
+ * Closes one fixed finance workflow record.
+ * @param data - stable run identity, stop reason, and produced artifact kinds.
+ */
+'tool-financial-research/run-end': ToolFinancialResearchRunEndData
+```
+
+Source: [`packages/workflow/tool-financial-research/src/types.ts:34`](../packages/workflow/tool-financial-research/src/types.ts)
+
+<a id="tool-financial-researchrun-start--log-only"></a>
+
+#### `tool-financial-research/run-start` — log-only
+
+```ts persistence-catalog
+/**
+ * Opens one fixed finance workflow record.
+ * @param data - stable run identity and the requested topic.
+ */
+'tool-financial-research/run-start': ToolFinancialResearchRunStartData
+```
+
+Source: [`packages/workflow/tool-financial-research/src/types.ts:29`](../packages/workflow/tool-financial-research/src/types.ts)
+
 ### `tool-workflow/*`
 
 <a id="tool-workflowagent-end--log-only"></a>

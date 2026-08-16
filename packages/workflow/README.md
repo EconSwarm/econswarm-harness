@@ -8,6 +8,8 @@ This family runs model-authored orchestration workflows over subagents and expos
 |---|---|---|
 | [`workflow/`](workflow/README.md) | Defines workflow execution and lifecycle events | `ctx.workflowEngine` |
 | [`workflow-worker-thread/`](workflow-worker-thread/README.md) | Runs workflow scripts in worker threads | registers on `ctx.workflowEngine` |
+| [`financial-research/`](financial-research/README.md) | Defines finance workflow types and the fixed workflow builder | — |
+| [`tool-financial-research/`](tool-financial-research/README.md) | Exposes the fixed finance workflow to the model | registers on `ctx.tools` |
 | [`tool-workflow/`](tool-workflow/README.md) | Exposes general workflow execution to the model | registers on `ctx.tools` |
 | [`tool-ralph/`](tool-ralph/README.md) | Exposes the fixed fresh-agent Ralph workflow | registers on `ctx.tools` |
 

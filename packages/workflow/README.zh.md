@@ -8,6 +8,8 @@
 |---|---|---|
 | [`workflow/`](workflow/README.md) | 定义工作流执行和生命周期事件 | `ctx.workflowEngine` |
 | [`workflow-worker-thread/`](workflow-worker-thread/README.md) | 在线程中运行工作流脚本 | 注册到 `ctx.workflowEngine` |
+| [`financial-research/`](financial-research/README.md) | 定义金融工作流类型与固定工作流构建器 | — |
+| [`tool-financial-research/`](tool-financial-research/README.md) | 向模型公开固定金融工作流 | 注册到 `ctx.tools` |
 | [`tool-workflow/`](tool-workflow/README.md) | 向模型公开通用工作流执行 | 注册到 `ctx.tools` |
 | [`tool-ralph/`](tool-ralph/README.md) | 公开使用全新 agent（智能体）的固定 Ralph 工作流 | 注册到 `ctx.tools` |
 

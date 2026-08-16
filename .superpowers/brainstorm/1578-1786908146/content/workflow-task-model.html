@@ -1,0 +1,141 @@
+<h2>多智能体工作流引擎：任务模型与节点类型</h2>
+<p class="subtitle">目标是把“混合研究”拆成稳定、可并行、可回放的节点，而不是让一个 Agent 从头做到尾</p>
+
+<div class="section">
+  <div class="label">任务模型</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-body">
+        <h3>研究任务 Research Job</h3>
+        <p>一次完整研究请求。包含主题、范围、输出目标、优先级、触发方式、执行模板。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>工作流实例 Workflow Run</h3>
+        <p>某个模板在本次任务上的真实执行。包含节点图、状态、依赖、时间线与终止原因。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>节点执行 Node Run</h3>
+        <p>单个步骤的一次运行记录。可由 Tool 直接执行，也可委派给 Subagent。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>研究产物 Artifact</h3>
+        <p>结构化中间结果与最终成果，如资料包、估值摘要、风险清单、最终报告。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">建议的第一阶段节点图</div>
+  <div class="mockup-body">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:stretch;">
+      <div style="border:1px solid #5b7cff;border-radius:12px;padding:12px;background:#eef3ff;">
+        <h3 style="margin:0 0 8px 0;">1. 任务初始化</h3>
+        <p style="margin:0;">校验输入、选择模板、写入 Session、生成任务上下文</p>
+      </div>
+      <div style="border:1px solid #d34c7c;border-radius:12px;padding:12px;background:#fff0f6;">
+        <h3 style="margin:0 0 8px 0;">2. 资料采集</h3>
+        <p style="margin:0;">公开数据抓取、新闻与财报获取、基础结构化清洗</p>
+      </div>
+      <div style="border:1px solid #6f55d8;border-radius:12px;padding:12px;background:#f3efff;">
+        <h3 style="margin:0 0 8px 0;">3. 路由拆解</h3>
+        <p style="margin:0;">根据任务类型拆给财报、行业、量化、风险等子任务</p>
+      </div>
+      <div style="border:1px solid #1b9c6b;border-radius:12px;padding:12px;background:#ecfbf5;">
+        <h3 style="margin:0 0 8px 0;">4. 结果汇总</h3>
+        <p style="margin:0;">合并中间结论、生成统一证据包、形成后续写作上下文</p>
+      </div>
+    </div>
+
+    <div style="height:14px;"></div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;align-items:stretch;">
+      <div style="border:1px solid #f3a33b;border-radius:12px;padding:12px;background:#fff7ea;">
+        <h3 style="margin:0 0 8px 0;">5. 并行分析节点</h3>
+        <p style="margin:0;">财报解析 Agent、新闻归因 Agent、估值 Agent、风控审阅 Agent 可并行执行</p>
+      </div>
+      <div style="border:1px solid #637083;border-radius:12px;padding:12px;background:#f5f7fa;">
+        <h3 style="margin:0 0 8px 0;">6. 报告生成节点</h3>
+        <p style="margin:0;">基于统一证据包输出研究结论、报告草稿与关键风险提示</p>
+      </div>
+      <div style="border:1px solid #38506a;border-radius:12px;padding:12px;background:#edf2f7;">
+        <h3 style="margin:0 0 8px 0;">7. 结束与回放</h3>
+        <p style="margin:0;">产物入库、状态收口、任务树与日志可供工作台查看</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">第一阶段节点类型</div>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>建议保留的 5 类节点</h4>
+      <ul>
+        <li>入口节点：初始化任务、装载上下文</li>
+        <li>工具节点：调用公开数据与基础分析能力</li>
+        <li>委派节点：把专门任务交给子智能体</li>
+        <li>汇总节点：合并结构化结果，判断缺口</li>
+        <li>产出节点：生成研究结论、报告与任务摘要</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>第一阶段暂不引入</h4>
+      <ul>
+        <li>过于细碎的十几种节点 DSL</li>
+        <li>复杂人工审批节点</li>
+        <li>跨工作流嵌套调用</li>
+        <li>长时调度和定时批处理编排</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">一个典型混合研究任务</div>
+  <div class="mockup">
+    <div class="mockup-header">示例：研究“某公司在行业周期中的投资价值”</div>
+    <div class="mockup-body">
+      <p style="margin-top:0;">初始化任务</p>
+      <p>-> 采集公开资料</p>
+      <p>-> 并行分发给财报解析 / 行业景气分析 / 新闻归因 / 风险审阅</p>
+      <p>-> 汇总统一证据包</p>
+      <p>-> 生成研究结论与报告草稿</p>
+      <p style="margin-bottom:0;">-> 写入会话与任务树供工作台回放</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>这套任务模型和节点粒度是否符合你的预期？</h3>
+  <p class="subtitle">你可以选择保持简洁，或者让我继续把某一类节点做得更强。</p>
+  <div class="options">
+    <div class="option" data-choice="task-model-ok" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>粒度合适</h3>
+        <p>继续往下细化状态机、错误恢复与可观测设计。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="stronger-delegate" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>委派节点更强</h3>
+        <p>希望 Subagent 的上下文管理、持续跟进和回传能力更突出。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="stronger-artifact" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>产物模型更强</h3>
+        <p>希望中间结果和最终报告的结构化定义更靠前。</p>
+      </div>
+    </div>
+  </div>
+</div>

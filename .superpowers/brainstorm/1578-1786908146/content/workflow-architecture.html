@@ -1,0 +1,124 @@
+<h2>多智能体工作流引擎：系统架构与模块边界</h2>
+<p class="subtitle">方案 A：以 Workflow 为中心，Subagent 作为执行单元，Skill 作为能力底座，Session 负责留痕与回放</p>
+
+<div class="section">
+  <div class="label">设计目标</div>
+  <p>先把研究任务拆解、编排、执行、观测、留痕这一条主链路做扎实，再让研究工作台和金融技能中心以插件方式挂载进来。</p>
+</div>
+
+<div class="mockup">
+  <div class="mockup-header">核心模块关系</div>
+  <div class="mockup-body">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:14px;">
+      <div style="border:1px solid #5b7cff;border-radius:12px;padding:14px;background:#eef3ff;">
+        <h3 style="margin:0 0 8px 0;">研究入口</h3>
+        <p style="margin:0;">对话工作台 / API / 批量任务入口</p>
+      </div>
+      <div style="border:1px solid #6f55d8;border-radius:12px;padding:14px;background:#f3efff;">
+        <h3 style="margin:0 0 8px 0;">Workflow Orchestrator</h3>
+        <p style="margin:0;">任务模板、步骤依赖、状态机、重试、终止、结果汇总</p>
+      </div>
+      <div style="border:1px solid #1b9c6b;border-radius:12px;padding:14px;background:#ecfbf5;">
+        <h3 style="margin:0 0 8px 0;">Session / Audit</h3>
+        <p style="margin:0;">过程日志、子任务轨迹、中间结果、最终产物回放</p>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div style="border:1px solid #f3a33b;border-radius:12px;padding:14px;background:#fff7ea;">
+        <h3 style="margin:0 0 8px 0;">Subagent Pool</h3>
+        <p style="margin:0;">财报解析、新闻归因、估值分析、风险审阅、报告撰写</p>
+      </div>
+      <div style="border:1px solid #d34c7c;border-radius:12px;padding:14px;background:#fff0f6;">
+        <h3 style="margin:0 0 8px 0;">Skill / Tool Layer</h3>
+        <p style="margin:0;">公开数据抓取、结构化提取、指标计算、报告导出、规则校验</p>
+      </div>
+      <div style="border:1px solid #637083;border-radius:12px;padding:14px;background:#f5f7fa;">
+        <h3 style="margin:0 0 8px 0;">结果输出</h3>
+        <p style="margin:0;">研究结论、标准化报告、任务树视图、阶段日志</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">主数据流</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-body">
+        <h3>1. 发起任务</h3>
+        <p>研究员在工作台提交一个研究主题或批量任务，选择模板与输出目标。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>2. 编排拆解</h3>
+        <p>Workflow 把任务拆成节点，决定哪些节点走 tool，哪些节点派给 subagent。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>3. 并行执行</h3>
+        <p>子智能体各自调用技能层处理公开数据、分析、校验与写作。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>4. 汇总留痕</h3>
+        <p>节点状态、日志、中间结果和最终产物统一进入 Session 体系，供工作台展示与回放。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">边界原则</div>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>明确归属</h4>
+      <ul>
+        <li>流程控制归 Workflow</li>
+        <li>专业分工归 Subagent</li>
+        <li>外部能力归 Skill / Tool</li>
+        <li>审计回放归 Session</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>刻意避免</h4>
+      <ul>
+        <li>让 Subagent 直接承担全局编排</li>
+        <li>让 Tool 层偷偷承载业务流程</li>
+        <li>把工作台状态和执行状态耦死</li>
+        <li>把最终报告生成散落在多个节点里</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>这个模块划分看起来是否符合你的预期？</h3>
+  <p class="subtitle">可以直接在页面点一个方向，也可以在终端里补充你想调整的地方。</p>
+  <div class="options">
+    <div class="option" data-choice="approve-boundary" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>边界合理</h3>
+        <p>继续往下细化任务模型与工作流节点。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="more-workflow" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>强化编排层</h3>
+        <p>希望 Workflow 更像任务中枢，承担更多模板与治理能力。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="more-observability" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>强化可观测</h3>
+        <p>希望任务树、阶段状态、日志与回放在架构里更靠前。</p>
+      </div>
+    </div>
+  </div>
+</div>

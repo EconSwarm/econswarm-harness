@@ -1,0 +1,166 @@
+<h2>多智能体工作流引擎：状态机、失败恢复与可观测性</h2>
+<p class="subtitle">第一阶段不追求复杂调度，但必须做到：状态清晰、失败可控、过程可见、结果可回放</p>
+
+<div class="section">
+  <div class="label">工作流状态机</div>
+  <div class="mockup">
+    <div class="mockup-header">Workflow Run 生命周期</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;align-items:stretch;">
+        <div style="border:1px solid #5b7cff;border-radius:12px;padding:12px;background:#eef3ff;">
+          <h3 style="margin:0 0 8px 0;">Created</h3>
+          <p style="margin:0;">任务创建，模板与输入就绪</p>
+        </div>
+        <div style="border:1px solid #6f55d8;border-radius:12px;padding:12px;background:#f3efff;">
+          <h3 style="margin:0 0 8px 0;">Planning</h3>
+          <p style="margin:0;">节点图展开，依赖与路由确定</p>
+        </div>
+        <div style="border:1px solid #f3a33b;border-radius:12px;padding:12px;background:#fff7ea;">
+          <h3 style="margin:0 0 8px 0;">Running</h3>
+          <p style="margin:0;">工具节点与委派节点按依赖执行</p>
+        </div>
+        <div style="border:1px solid #3ea66b;border-radius:12px;padding:12px;background:#ecfbf5;">
+          <h3 style="margin:0 0 8px 0;">Completed</h3>
+          <p style="margin:0;">全部必要产物已生成并收口</p>
+        </div>
+        <div style="border:1px solid #d34c7c;border-radius:12px;padding:12px;background:#fff0f6;">
+          <h3 style="margin:0 0 8px 0;">Failed</h3>
+          <p style="margin:0;">关键节点失败且无法自动恢复</p>
+        </div>
+        <div style="border:1px solid #637083;border-radius:12px;padding:12px;background:#f5f7fa;">
+          <h3 style="margin:0 0 8px 0;">Cancelled</h3>
+          <p style="margin:0;">用户或系统主动终止执行</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">节点状态机</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-body">
+        <h3>Pending</h3>
+        <p>等待上游依赖完成，尚未开始执行。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>Ready</h3>
+        <p>依赖已满足，可进入执行队列。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>Running</h3>
+        <p>工具调用或子智能体任务正在进行。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>Succeeded / Failed / Skipped</h3>
+        <p>节点有明确结局，并带着结构化结果或错误原因结束。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">失败恢复策略</div>
+  <div class="pros-cons">
+    <div class="pros">
+      <h4>第一阶段建议支持</h4>
+      <ul>
+        <li>工具节点有限次自动重试</li>
+        <li>委派节点失败后回传结构化错误</li>
+        <li>非关键节点可标记降级继续</li>
+        <li>最终报告明确缺失证据与失败步骤</li>
+      </ul>
+    </div>
+    <div class="cons">
+      <h4>第一阶段不做</h4>
+      <ul>
+        <li>任意节点从中间精确断点恢复</li>
+        <li>复杂人工介入编排</li>
+        <li>跨多天的长时作业恢复</li>
+        <li>自动改写工作流图再执行</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">工作台需要看到什么</div>
+  <div class="mockup">
+    <div class="mockup-header">最小可观测视图</div>
+    <div class="mockup-body">
+      <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;">
+        <div style="border:1px solid #d7dee7;border-radius:12px;padding:12px;background:#ffffff;">
+          <h3 style="margin:0 0 8px 0;">任务树</h3>
+          <p style="margin:0;">展示 Workflow Run、节点依赖、当前阶段、节点负责人 Agent。</p>
+        </div>
+        <div style="border:1px solid #d7dee7;border-radius:12px;padding:12px;background:#ffffff;">
+          <h3 style="margin:0 0 8px 0;">阶段日志</h3>
+          <p style="margin:0;">每个节点的开始、结束、重试、失败原因与关键产物摘要。</p>
+        </div>
+        <div style="border:1px solid #d7dee7;border-radius:12px;padding:12px;background:#ffffff;">
+          <h3 style="margin:0 0 8px 0;">产物面板</h3>
+          <p style="margin:0;">证据包、风险清单、报告草稿、最终结论都能单独查看。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">与 DeepSeek Harness 的映射</div>
+  <div class="cards">
+    <div class="card">
+      <div class="card-body">
+        <h3>Workflow 事件</h3>
+        <p>承接工作流运行状态与节点生命周期，是工作台进度视图的主来源。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>Subagent Report</h3>
+        <p>承接委派节点的中间进展与完成结果，适合填充任务树子分支。</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <h3>Session Log</h3>
+        <p>承接全链路留痕，保证模型可见内容与工作台可回放内容一致。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>这套状态与可观测设计是否符合你的预期？</h3>
+  <p class="subtitle">如果你认可，我下一步就会收束成第一阶段功能边界与验收标准。</p>
+  <div class="options">
+    <div class="option" data-choice="observability-ok" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>设计合理</h3>
+        <p>继续往下定义第一阶段范围、暂不做项和验收标准。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="stronger-recovery" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>恢复更强</h3>
+        <p>希望第一阶段就把断点恢复与节点重跑做得更完整。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="stronger-ui" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>工作台更强</h3>
+        <p>希望任务树、日志和产物视图从第一阶段开始就是核心卖点。</p>
+      </div>
+    </div>
+  </div>
+</div>

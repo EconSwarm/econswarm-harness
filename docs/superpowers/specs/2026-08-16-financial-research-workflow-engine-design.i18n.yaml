@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write docs/superpowers/specs/2026-08-16-financial-research-workflow-engine-design.md
+2026-08-16-financial-research-workflow-engine-design.md: cce3318b6b0e9a9a629023e4d7ead8d33c6e677a
+2026-08-16-financial-research-workflow-engine-design.zh.md: e87fe16333e4ee4710f2b6745ebd8cb1e3eea22c

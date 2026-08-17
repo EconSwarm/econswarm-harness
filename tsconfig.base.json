@@ -140,6 +140,7 @@
         "./packages/util/*/src/invariant.ts",
         "./packages/mcp/*/src/invariant.ts",
         "./packages/identity/*/src/invariant.ts",
+        "./packages/finance/*/src/invariant.ts",
         "./packages/test-support/*/src/invariant.ts"
       ],
       // host/client package names prefix the group dir (dsh-client-<dir>), so
@@ -165,6 +166,8 @@
       "@deepseek-ai/dsh-host-directory-picker-native/*": ["./packages/host/directory-picker-native/src/*"],
       "@deepseek-ai/dsh-host-directory-picker-auto": ["./packages/host/directory-picker-auto/src"],
       "@deepseek-ai/dsh-host-directory-picker-auto/*": ["./packages/host/directory-picker-auto/src/*"],
+      "@deepseek-ai/dsh-skill-econswarm": ["./packages/finance/skills-econswarm/src/index.ts"],
+      "@deepseek-ai/dsh-skill-econswarm/invariant": ["./packages/finance/skills-econswarm/src/invariant.ts"],
       "@deepseek-ai/dsh-host-apiproxy/client": ["./packages/host/apiproxy/src/fetch/client.ts"],
       "@deepseek-ai/dsh-host-apiproxy/*": ["./packages/host/apiproxy/src/*"],
       "@deepseek-ai/dsh-host-webserver": ["./packages/host/webserver/src"],
@@ -270,6 +273,7 @@
         "./packages/util/*/src",
         "./packages/mcp/*/src",
         "./packages/identity/*/src",
+        "./packages/finance/*/src",
         "./packages/test-support/*/src",
         "./packages/host/*/src",
         "./packages/client/*/src"

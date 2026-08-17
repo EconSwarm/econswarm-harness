@@ -27,3 +27,10 @@ An opt-in Web overlay for durable, Session-local reminders. It supports positive
 ## acp-agent
 
 An Agent Client Protocol automation server for programmatic clients, with session, permission, and cancellation support. See the [ACP example reference](acp-agent/README.md).
+
+## econswarm-platform
+
+A runnable financial multi-agent platform: EconSwarm analyst roles, the
+packaged 184-skill catalog, and the seven-stage pipeline tool over the
+headless profile. See
+[econswarm-platform/README.md](econswarm-platform/README.md).

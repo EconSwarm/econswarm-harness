@@ -38,8 +38,10 @@ import * as ToolSubagentListAgents from '@deepseek-ai/dsh-tool-subagent-control/
 import * as ToolSubagentReport from '@deepseek-ai/dsh-tool-subagent-report'
 import SkillRegistry from '@deepseek-ai/dsh-skill'
 import * as SkillFileSystem from '@deepseek-ai/dsh-skill-filesystem'
+import EconSwarmRuntime from '@deepseek-ai/dsh-econswarm'
 import LocalJobRegistry from '@deepseek-ai/dsh-jobs-local'
 import * as ToolAskUser from '@deepseek-ai/dsh-tool-ask-user'
+import * as ToolEconswarm from '@deepseek-ai/dsh-tool-econswarm'
 import * as ToolBash from '@deepseek-ai/dsh-tool-bash'
 import * as ToolPwsh from '@deepseek-ai/dsh-tool-pwsh'
 import * as ToolBashPersistent from '@deepseek-ai/dsh-tool-bash-persistent'
@@ -182,6 +184,27 @@ export interface ToolPackage {
  * guard proves it is exhaustive against the on-disk glob.
  */
 const TOOL_PACKAGES: ToolPackage[] = [
+  {
+    pkg: '@deepseek-ai/dsh-tool-econswarm',
+    dir: 'tool-econswarm',
+    source: 'packages/finance/tool-econswarm/src/index.ts',
+    requires: ['ctx.tools', 'ctx.econswarm', 'ctx.subagents'],
+    writes: ['tool/call', 'tool/result'],
+    async mount(ctx) {
+      await ctx.plugin(EconSwarmRuntime)
+      await ctx.plugin(SubagentRuntime)
+      registerCatalogSubagentProvider(ctx, 'spawn')
+      await ctx.plugin(ToolEconswarm, {
+        subagentProvider: 'spawn',
+        defaultAnalysts: ['market'],
+        maxDebateRounds: 0,
+        maxRiskDiscussRounds: 0,
+        outputLanguage: 'English',
+      })
+    },
+    note:
+      'econswarm_list_roles returns the ported analyst catalog; econswarm_run_pipeline delegates each stage to one-shot subagents and returns the final decision plus quality-gate summary.',
+  },
   {
     pkg: '@deepseek-ai/dsh-tool-ask-user',
     dir: 'tool-ask-user',

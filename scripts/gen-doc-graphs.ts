@@ -65,6 +65,7 @@ const GROUP_ORDER = [
   'attachment',
   'llm',
   'core',
+  'finance',
   'typert',
   'goal',
   'process',
@@ -121,6 +122,14 @@ const SERVICE_ROLES: ServiceRole[] = [
     mode: 'core',
     consumers: ['compaction-basic'],
     note: 'Owns isolated per-session replay folds; pressure consumers share immutable revisioned measurements.',
+  },
+  {
+    key: 'econswarm',
+    pkg: 'econswarm',
+    title: 'EconSwarm financial domain',
+    mode: 'core',
+    consumers: ['tool-econswarm'],
+    note: 'Owns the ported analyst registry, role skill bindings, and Layer-1 quality gate; the pipeline consumer delegates stages through subagents.',
   },
   {
     key: 'toolResultPruner',

@@ -210,6 +210,10 @@
     - id: ui-workflow-run
       name: '@deepseek-ai/dsh-client-ui-workflow-run'
 
+    # EconSwarm finance navigation: workflows, agent plaza, and skill library.
+    - id: ui-econswarm
+      name: '@deepseek-ai/dsh-client-ui-econswarm'
+
     # Turn tail: the produced-files row under each closing assistant message.
     # Remove this entry to turn the surface off; the tail hole renders empty.
     - id: ui-deliverables

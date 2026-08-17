@@ -17,6 +17,7 @@
 
 | 工具包 | 模型可见名称 | 依赖 | 写入／影响 | 随产品发布的别名 | 部署说明 |
 | --- | --- | --- | --- | --- | --- |
+| `@deepseek-ai/dsh-tool-econswarm` | `econswarm_list_roles`, `econswarm_run_pipeline` | `ctx.tools`、`ctx.econswarm`、`ctx.subagents` | `tool/call`、`tool/result` | - | econswarm_list_roles 返回移植后的分析师目录；econswarm_run_pipeline 把每个阶段委托给一次性 subagent，并返回最终决策与质量门控摘要。 |
 | `@deepseek-ai/dsh-tool-ask-user` | `ask_user_question` | `ctx.tools`、`ctx.userQuestions` | `tool/call`、`tool/result after a UI/provider answers the question` | - | ask_user_question 会暂停工具调用，直到当前 UI 提供方返回人类答案。 |
 | `@deepseek-ai/dsh-tools` | `run_code` | `ctx.tools`、`ctx.codeRuntime (execution time)`、`ctx.systemPrompt` | `tool/call`、`one tool/code-dispatch-start + tool/code-dispatch pair per bridged sub-call`、`tool/result` | - | 在 `mode: code`／`mode: both` 下，它由工具注册表所有，作为可过滤能力层之外的保留传输机制（参见 Code Mode Agent Note）。在 `code` 下，它是注册表对协议格式（wire format）的唯一贡献；其他可见能力在使用已加载运行时语言生成的 SDK 章节中声明。程序通过 binding 调用这些能力，调用按照原生并发约定调度：启动顺序和策略遵循提交顺序，并发安全的函数体最多重叠执行 `maxParallelSubCalls` 个。调用会重新进入完整且受守卫保护的工具流水线，并将每个嵌套执行关联到此外层结果。 |
 | `@deepseek-ai/dsh-plan-mode` | `exit_plan_mode` | `ctx.tools`、`ctx.systemPrompt`、`ctx.userQuestions (execution time, opportunistic)` | `tool/call`、`plan/mode inactive on an approved review`、`tool/result` | - | 规划未激活时，exit_plan_mode 仍保留在面向模型的 schema 中，这样状态转换不会在规划策略变更之外额外造成工具目录变动。其执行路径会拒绝规划模式之外的调用；在规划模式下，它通过用户交互 seam 提交计划（批准／根据反馈继续规划），批准后会在步骤边界记录规划模式已停用。 |
@@ -41,6 +42,66 @@
 | `@deepseek-ai/dsh-tool-todo` | `todo_write` | `ctx.tools`、`owning Agent session` | `tool/call`、`todo/write`、`tool/result` | - | todo_write 是会话所有的状态；UI 将最新的 todo/write 事件渲染为检查清单。`allowParallelInProgress` 是没有默认值的必填项，因此本目录明确选择 `true`，对应描述允许同时存在多个 `in_progress` 项。选择 `false` 的部署会获得同一工具，但描述会要求只能有 1 个活动任务。 |
 | `@deepseek-ai/dsh-tool-workflow` | `workflow` | `ctx.tools`、`ctx.workflowEngine`、`ctx.systemPrompt`、`a calling Agent (exec.agent parents the script children)` | `tool/call`、`tool/result` | - | - |
 | `@deepseek-ai/dsh-tool-web` | `web_fetch`、`web_search` | `ctx.tools`、`ctx.web`、`ctx.systemPrompt` | `tool/call`、`tool/result` | - | web_search 和 web_fetch 将提供方选择置于 ctx.web 之后，使模型可见 schema 在更换后端时保持稳定。 |
+
+<a id="deepseek-aidsh-tool-econswarm"></a>
+
+## `@deepseek-ai/dsh-tool-econswarm`
+
+### `econswarm_list_roles`
+
+List EconSwarm financial analyst and orchestration roles with their tool and skill bindings.
+
+```json
+{
+  "type": "object",
+  "properties": {}
+}
+```
+
+来源：[`packages/finance/tool-econswarm/src/index.ts`](../packages/finance/tool-econswarm/src/index.ts)
+
+### `econswarm_run_pipeline`
+
+Run the EconSwarm multi-agent financial pipeline for one instrument and return the final decision.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "ticker": {
+      "type": "string",
+      "description": "Instrument ticker, for example 600519.SH or AAPL."
+    },
+    "tradeDate": {
+      "type": "string",
+      "description": "Trade date in YYYY-MM-DD format."
+    },
+    "analysisGoal": {
+      "type": "string",
+      "description": "Research goal or user focus for the run."
+    },
+    "analysts": {
+      "type": "array",
+      "description": "Analyst role ids; defaults to the deployment selection.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "chainMode": {
+      "type": "boolean",
+      "description": "Use the simplified analysts to Portfolio Manager chain."
+    }
+  },
+  "required": [
+    "ticker",
+    "tradeDate"
+  ]
+}
+```
+
+来源：[`packages/finance/tool-econswarm/src/index.ts`](../packages/finance/tool-econswarm/src/index.ts)
+
+econswarm_list_roles 返回移植后的分析师目录；econswarm_run_pipeline 把每个阶段委托给一次性 subagent，并返回最终决策与质量门控摘要。
 
 <a id="deepseek-aidsh-tool-ask-user"></a>
 

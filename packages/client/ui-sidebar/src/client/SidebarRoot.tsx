@@ -169,6 +169,16 @@ export function SidebarRoot({
         </button>
       </Tooltip>
 
+      {/* Feature navigation rides the same wide/rail flip as the controls
+          above it; an empty strip (no feature plugin mounted) takes no
+          vertical space. */}
+      <div className={css.navArea}>
+        {renderSlot('sidebar.nav', {
+          wide,
+          expandSidebar: () => { if (collapsed) toggleSidebar() },
+        })}
+      </div>
+
       {/* The browsing region fills the column between the controls and the
           foot in both states; its rail icon column rides the same slot. */}
       <div className={css.regionArea}>

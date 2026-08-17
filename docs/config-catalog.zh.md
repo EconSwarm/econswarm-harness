@@ -2374,6 +2374,34 @@ export interface Config {
 
 来源：[`packages/shell/tool-bash-persistent/src/index.ts:405`](../packages/shell/tool-bash-persistent/src/index.ts)
 
+<a id="deepseek-aidsh-tool-econswarm"></a>
+
+## `@deepseek-ai/dsh-tool-econswarm`
+
+需要：`tools` · `econswarm` · `subagents`
+
+```ts config-catalog
+/** Deployment policy for the EconSwarm model tools. */
+export interface Config {
+  /** Named subagent provider used by every pipeline stage. */
+  readonly subagentProvider: string
+  /** Role ids used when a pipeline call omits `analysts`. */
+  readonly defaultAnalysts: string[]
+  /** Bull/bear alternating round count. */
+  readonly maxDebateRounds: number
+  /** Aggressive/conservative/neutral alternating round count. */
+  readonly maxRiskDiscussRounds: number
+  /** Output language appended to user-facing stage prompts. */
+  readonly outputLanguage: string
+  /** Optional provider override applied to every child. */
+  readonly provider?: string
+  /** Optional model override applied to every child. */
+  readonly model?: string
+}
+```
+
+来源：[`packages/finance/tool-econswarm/src/index.ts:25`](../packages/finance/tool-econswarm/src/index.ts)
+
 <a id="deepseek-aidsh-tool-fs"></a>
 
 ## `@deepseek-ai/dsh-tool-fs`
@@ -3067,6 +3095,7 @@ export interface Config {
 - `@deepseek-ai/dsh-command-goal` — 需要 `commands` · `goals`（[`packages/goal/command-goal/src/index.ts`](../packages/goal/command-goal/src/index.ts)）
 - `@deepseek-ai/dsh-commands`（[`packages/interaction/commands/src/index.ts`](../packages/interaction/commands/src/index.ts)）
 - `@deepseek-ai/dsh-cordis-client-runner`（[`packages/extensions/cordis-client-runner/src/index.ts`](../packages/extensions/cordis-client-runner/src/index.ts)）
+- `@deepseek-ai/dsh-econswarm`（[`packages/finance/econswarm/src/index.ts`](../packages/finance/econswarm/src/index.ts)）
 - `@deepseek-ai/dsh-fs-e2b` — 需要 `e2b`（[`packages/e2b/fs-e2b/src/index.ts`](../packages/e2b/fs-e2b/src/index.ts)）
 - `@deepseek-ai/dsh-fs-observation-policy`（[`packages/fs/fs-observation-policy/src/index.ts`](../packages/fs/fs-observation-policy/src/index.ts)）
 - `@deepseek-ai/dsh-goal-round-driver` — 需要 `agents` · `goals` · `sessions`（[`packages/goal/goal-round-driver/src/index.ts`](../packages/goal/goal-round-driver/src/index.ts)）
@@ -3082,6 +3111,7 @@ export interface Config {
 - `@deepseek-ai/dsh-session-projection`（[`packages/session/session-projection/src/index.ts`](../packages/session/session-projection/src/index.ts)）
 - `@deepseek-ai/dsh-session-stats` — 需要 `sessionProjections`（[`packages/session/session-stats/src/index.ts`](../packages/session/session-stats/src/index.ts)）
 - `@deepseek-ai/dsh-skill-badge` — 需要 `skills`（[`packages/skill/skill-badge/src/index.ts`](../packages/skill/skill-badge/src/index.ts)）
+- `@deepseek-ai/dsh-skill-econswarm` — 需要 `skills`（[`packages/finance/skills-econswarm/src/index.ts`](../packages/finance/skills-econswarm/src/index.ts)）
 - `@deepseek-ai/dsh-storage`（[`packages/storage/storage/src/index.ts`](../packages/storage/storage/src/index.ts)）
 - `@deepseek-ai/dsh-subagent`（[`packages/subagent/subagent/src/index.ts`](../packages/subagent/subagent/src/index.ts)）
 - `@deepseek-ai/dsh-subprocess-local`（[`packages/subprocess/subprocess-local/src/index.ts`](../packages/subprocess/subprocess-local/src/index.ts)）

@@ -1,0 +1,26 @@
+# EconSwarm platform overlay for `dsh --profile headless`. It mounts the
+# domain service, the packaged financial skill catalog, and the pipeline tool
+# over the shared dsh base. The pipeline consumer delegates each stage through
+# the base's `spawn` subagent provider.
+- insert:
+    - id: econswarm
+      name: '@deepseek-ai/dsh-econswarm'
+
+    - id: econswarm-skills
+      name: '@deepseek-ai/dsh-skill-econswarm'
+
+    - id: tool-econswarm
+      name: '@deepseek-ai/dsh-tool-econswarm'
+      config:
+        subagentProvider: spawn
+        defaultAnalysts:
+          - market
+          - social
+          - news
+          - fundamentals
+          - policy
+          - hot_money
+          - lockup
+        maxDebateRounds: 1
+        maxRiskDiscussRounds: 1
+        outputLanguage: Chinese

@@ -1,0 +1,13 @@
+services:
+  econswarm-platform:
+    build:
+      context: ../../..
+      dockerfile: examples/econswarm-platform/deploy/Dockerfile
+    environment:
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:?set DEEPSEEK_API_KEY in .env}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-}
+    volumes:
+      - dsh-home:/root/.dsh
+
+volumes:
+  dsh-home:

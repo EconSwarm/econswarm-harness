@@ -23,6 +23,13 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'sidebar.workspaces': { kind: 'single'; scope: 'root'; owner: SidebarSectionOwnerProps }
     /**
+     * The navigation strip between New Session and the workspace browser:
+     * feature pages that live outside the session flow (workflows, agent
+     * plaza, skill library). Declared by this package's 'sidebar' entry;
+     * ui-econswarm registers the finance navigation.
+     */
+    'sidebar.nav': { kind: 'single'; scope: 'root'; owner: SidebarNavOwnerProps }
+    /**
      * The settings seat at the sidebar foot. Declared by this package's
      * 'sidebar' entry; ui-settings registers its trigger row + modal panel.
      * The sidebar passes only its column state — it holds no settings state.
@@ -44,6 +51,18 @@ export interface SidebarSectionOwnerProps {
   /** Shell fold-state output: wide renders the full browser, rail the icon column. */
   wide: boolean
   /** Rail icons request expansion; the browser rides the wide flip for focus. */
+  expandSidebar: () => void
+}
+
+/**
+ * Owner share of the navigation strip: the same column state the workspace
+ * browser receives, because a rail icon must stay 36px and wide rows carry
+ * labels.
+ */
+export interface SidebarNavOwnerProps {
+  /** Whether the sidebar renders wide content (false = 56px rail). */
+  wide: boolean
+  /** Rail icons request expansion; feature pages may also open directly. */
   expandSidebar: () => void
 }
 
@@ -85,5 +104,5 @@ export type SidebarRootInjected = {
  */
 export type SidebarRootComponentProps =
   PropsRuntime<'sidebar'>
-  & PropsRenderSlots<'sidebar.workspaces' | 'sidebar.settings' | 'sidebar.footer.action'>
+  & PropsRenderSlots<'sidebar.nav' | 'sidebar.workspaces' | 'sidebar.settings' | 'sidebar.footer.action'>
   & SidebarRootInjected & PropsLocale<'sidebar'>

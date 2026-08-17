@@ -15,6 +15,7 @@ This table connects model-visible tool names to the plugin package and service s
 
 | Tool package | Model-visible names | Requires | Writes / affects | Shipped aliases | Deployment note |
 | --- | --- | --- | --- | --- | --- |
+| `@deepseek-ai/dsh-tool-econswarm` | `econswarm_list_roles`, `econswarm_run_pipeline` | `ctx.tools`, `ctx.econswarm`, `ctx.subagents` | `tool/call`, `tool/result` | - | econswarm_list_roles returns the ported analyst catalog; econswarm_run_pipeline delegates each stage to one-shot subagents and returns the final decision plus quality-gate summary. |
 | `@deepseek-ai/dsh-tool-ask-user` | `ask_user_question` | `ctx.tools`, `ctx.userQuestions` | `tool/call`, `tool/result after a UI/provider answers the question` | - | ask_user_question pauses the tool call until the active UI provider returns a human answer. |
 | `@deepseek-ai/dsh-tools` | `run_code` | `ctx.tools`, `ctx.codeRuntime (execution time)`, `ctx.systemPrompt` | `tool/call`, `one tool/code-dispatch-start + tool/code-dispatch pair per bridged sub-call`, `tool/result` | - | Owned by the tool registry as a reserved transport outside filterable capability layers under `mode: code` / `mode: both` (see the Code Mode Agent Note). Under `code` it is the registry's only wire contribution; the other visible capabilities are declared in a generated SDK section in the loaded runtime's language, and a program calls them through bindings scheduled under the native concurrency contract (submission-ordered starts and policy; concurrency-safe bodies overlap up to `maxParallelSubCalls`) that re-enter the complete guarded tool pipeline and link each nested execution to this outer result. |
 | `@deepseek-ai/dsh-plan-mode` | `exit_plan_mode` | `ctx.tools`, `ctx.systemPrompt`, `ctx.userQuestions (execution time, opportunistic)` | `tool/call`, `plan/mode inactive on an approved review`, `tool/result` | - | exit_plan_mode stays in the model-facing schema while planning is inactive so transitions add no tool-catalog churn on top of the plan-policy change. Its execute path rejects calls outside plan mode; in plan mode it presents the plan over the user-questions seam (approve / keep planning with feedback), and approval logs plan mode inactive at the step boundary. |
@@ -39,6 +40,66 @@ This table connects model-visible tool names to the plugin package and service s
 | `@deepseek-ai/dsh-tool-todo` | `todo_write` | `ctx.tools`, `owning Agent session` | `tool/call`, `todo/write`, `tool/result` | - | todo_write is session-owned state; UIs render the latest todo/write event as a checklist. `allowParallelInProgress` is required with no default, so the catalog states its choice: `true`, whose description invites several `in_progress` items. A deployment choosing `false` receives the same tool with a description asking for exactly one active task. |
 | `@deepseek-ai/dsh-tool-workflow` | `workflow` | `ctx.tools`, `ctx.workflowEngine`, `ctx.systemPrompt`, `a calling Agent (exec.agent parents the script children)` | `tool/call`, `tool/result` | - | - |
 | `@deepseek-ai/dsh-tool-web` | `web_fetch`, `web_search` | `ctx.tools`, `ctx.web`, `ctx.systemPrompt` | `tool/call`, `tool/result` | - | web_search and web_fetch keep provider selection behind ctx.web so model-visible schemas stay stable across backend swaps. |
+
+<a id="deepseek-aidsh-tool-econswarm"></a>
+
+## `@deepseek-ai/dsh-tool-econswarm`
+
+### `econswarm_list_roles`
+
+List EconSwarm financial analyst and orchestration roles with their tool and skill bindings.
+
+```json
+{
+  "type": "object",
+  "properties": {}
+}
+```
+
+Source: [`packages/finance/tool-econswarm/src/index.ts`](../packages/finance/tool-econswarm/src/index.ts)
+
+### `econswarm_run_pipeline`
+
+Run the EconSwarm multi-agent financial pipeline for one instrument and return the final decision.
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "ticker": {
+      "type": "string",
+      "description": "Instrument ticker, for example 600519.SH or AAPL."
+    },
+    "tradeDate": {
+      "type": "string",
+      "description": "Trade date in YYYY-MM-DD format."
+    },
+    "analysisGoal": {
+      "type": "string",
+      "description": "Research goal or user focus for the run."
+    },
+    "analysts": {
+      "type": "array",
+      "description": "Analyst role ids; defaults to the deployment selection.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "chainMode": {
+      "type": "boolean",
+      "description": "Use the simplified analysts to Portfolio Manager chain."
+    }
+  },
+  "required": [
+    "ticker",
+    "tradeDate"
+  ]
+}
+```
+
+Source: [`packages/finance/tool-econswarm/src/index.ts`](../packages/finance/tool-econswarm/src/index.ts)
+
+econswarm_list_roles returns the ported analyst catalog; econswarm_run_pipeline delegates each stage to one-shot subagents and returns the final decision plus quality-gate summary.
 
 <a id="deepseek-aidsh-tool-ask-user"></a>
 

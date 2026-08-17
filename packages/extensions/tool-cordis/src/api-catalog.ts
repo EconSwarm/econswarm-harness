@@ -563,6 +563,31 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'econswarm',
+    summary: 'EconSwarm domain service registered as `ctx.econswarm`.',
+    description: 'EconSwarm domain service registered as `ctx.econswarm`.',
+    methods: [
+      {
+        signature: 'listRoles(): readonly AnalystRole[]',
+        description: 'List every ported analyst and orchestration role.',
+        parameters: [],
+        returns: 'all ported roles in registration order.',
+      },
+      {
+        signature: 'getRole(id: string): AnalystRole | undefined',
+        description: 'Resolve one role by its stable id string.',
+        parameters: [{ name: 'id', description: 'stable role id.' }],
+        returns: 'the matching role, or `undefined` when unknown.',
+      },
+      {
+        signature: 'defaultAnalysts(): readonly AnalystRole[]',
+        description: 'Return the original seven-core default analyst selection.',
+        parameters: [],
+        returns: 'the seven default core roles.',
+      },
+    ],
+  },
+  {
     key: 'fs',
     summary: 'Abstract filesystem provider.',
     description: 'Abstract filesystem provider. Targets must preserve identity across aliases; reads expose regular UTF-8 text or typed errors, listings are stable and content-free, and mutations are atomic. Optional guards add stale protection without changing the unguarded provider contract.',
@@ -2650,6 +2675,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type AgentStatus = \'idle\' | \'running\';',
   },
   {
+    name: 'AnalystId',
+    declaration: 'export type AnalystId = Branded<\'AnalystId\'>;',
+  },
+  {
+    name: 'AnalystRole',
+    declaration: 'export interface AnalystRole {\n    readonly id: AnalystId;\n    readonly displayName: string;\n    readonly description: string;\n    readonly modelClass: ModelClass;\n    readonly hasTools: boolean;\n    readonly tools: readonly string[];\n    readonly skills: readonly string[];\n}',
+  },
+  {
     name: 'ApprovalOutcome',
     declaration: 'export type ApprovalOutcome = \'allowed-once\' | \'rejected\' | \'cancelled\' | \'unavailable\';',
   },
@@ -3452,6 +3485,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'MessageSourceMap',
     declaration: 'export interface MessageSourceMap {\n    user: {\n        kind: \'user\';\n    };\n    plugin: {\n        kind: \'plugin\';\n        plugin: string;\n    } & ContextFormed;\n    model: ModelMessageSource;\n    tool: ToolMessageSource;\n}',
+  },
+  {
+    name: 'ModelClass',
+    declaration: 'export type ModelClass = \'quick\' | \'deep\';',
   },
   {
     name: 'ModelMessageSource',

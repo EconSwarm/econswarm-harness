@@ -81,6 +81,14 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      * `id` is added beside the shipped entries instead of replacing them.
      */
     'shell.overlay': { kind: 'list'; scope: 'root' }
+    /**
+     * Full-center page layer, rendered inside the center column above the
+     * conversation surface. Deliberately generic and unowned by any feature:
+     * an independent page entry (library, workflow runner, or settings hub)
+     * fills the space beside the sidebar without replacing the conversation
+     * slot's own registration.
+     */
+    'shell.center': { kind: 'list'; scope: 'root' }
   }
 }
 
@@ -124,6 +132,7 @@ export function apply(ctx: ClientContext): void {
         'conversation': { kind: 'single', scope: 'session-maybe' },
         'details': { kind: 'single', scope: 'session' },
         'shell.overlay': { kind: 'list', scope: 'root' },
+        'shell.center': { kind: 'list', scope: 'root' },
       },
       // Exclusive store: the factory itself — the framework instantiates per
       // entry and delivers useStore/actions to AppFrame as standard props.

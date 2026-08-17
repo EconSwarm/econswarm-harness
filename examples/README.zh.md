@@ -27,3 +27,7 @@
 ## acp-agent
 
 面向程序化客户端的 ACP（Agent Client Protocol）自动化服务器，支持会话、权限和取消操作。详见 [ACP 示例参考](acp-agent/README.md)。
+
+## econswarm-platform
+
+一个可运行的金融多智能体平台：EconSwarm 分析师角色、打包的 184 技能目录，以及 headless profile 上的七阶段流水线工具。详见 [econswarm-platform/README.md](econswarm-platform/README.md)。

@@ -65,6 +65,7 @@
    render stays static. */
 .railIn .iconButton,
 .railIn .newSession,
+.railIn .navArea,
 .railIn .regionArea {
   animation: rail-in 150ms var(--ds-ease-in-out) backwards;
 }
@@ -221,6 +222,22 @@
   max-width: 0;
 }
 
+/* Feature navigation strip: a flex column whose own occupant defines its
+   rows. Empty (no feature plugin mounted) it collapses to zero height. */
+.navArea {
+  flex: none;
+  min-width: 0;
+  margin: 0 0 8px;
+}
+
+.navArea:empty {
+  display: none;
+}
+
+.collapsed .navArea {
+  margin: 0 0 12px;
+}
+
 /* Region seat: always mounted so the foot never moves. Its trailing margin
    cancels the wide shell inset so the nested scrollbar can sit at the sidebar
    edge; the browser restores that inset inside its own rows. */
@@ -276,6 +293,7 @@
   .fading > *,
   .railIn .iconButton,
   .railIn .newSession,
+  .railIn .navArea,
   .railIn .footArea,
   .railIn .regionArea {
     transition: none;

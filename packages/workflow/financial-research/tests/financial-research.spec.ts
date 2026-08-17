@@ -5,6 +5,10 @@ import {
   type FinancialResearchResult,
 } from '../src/index.ts'
 
+const AsyncFunction = Object.getPrototypeOf(async function () {}).constructor as new (
+  ...args: string[]
+) => (...args: unknown[]) => Promise<unknown>
+
 describe('financial research workflow builder', () => {
   it('builds one fixed mixed-research workflow with the expected phases and specialist labels', () => {
     const built = buildFinancialResearchWorkflow({
@@ -33,6 +37,17 @@ describe('financial research workflow builder', () => {
       industry: 'Semiconductors',
       outputFormat: 'report-draft',
     })
+  })
+
+  it('emits a workflow script that parses before the worker runs it', () => {
+    const built = buildFinancialResearchWorkflow({
+      topic: 'Evaluate ACME under the current semiconductor cycle',
+      company: 'ACME',
+      industry: 'Semiconductors',
+      outputFormat: 'report-draft',
+    })
+
+    expect(() => { new AsyncFunction(built.script) }).not.toThrow()
   })
 
   it('renders a compact parent-facing summary from the structured result', () => {

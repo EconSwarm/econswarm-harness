@@ -1,0 +1,78 @@
+[
+  {
+    "kind": "chunks",
+    "chunks": [
+      {
+        "type": "block-start",
+        "index": 0,
+        "blockType": "tool-call"
+      },
+      {
+        "type": "tool-call-delta",
+        "index": 0,
+        "id": "call_financial_research",
+        "name": "financial_research",
+        "argumentsDelta": "{\"topic\":\"Run a financial research workflow on ACME in semiconductors and return a report draft.\",\"company\":\"ACME\",\"industry\":\"Semiconductors\",\"outputFormat\":\"report-draft\"}"
+      },
+      {
+        "type": "block-end",
+        "index": 0,
+        "block": {
+          "type": "tool-call",
+          "id": "call_financial_research",
+          "name": "financial_research",
+          "arguments": "{\"topic\":\"Run a financial research workflow on ACME in semiconductors and return a report draft.\",\"company\":\"ACME\",\"industry\":\"Semiconductors\",\"outputFormat\":\"report-draft\"}"
+        }
+      },
+      {
+        "type": "usage",
+        "usage": {
+          "inputTokens": 24,
+          "outputTokens": 15
+        }
+      },
+      {
+        "type": "finish",
+        "reason": {
+          "kind": "tool-calls"
+        }
+      }
+    ]
+  },
+  {
+    "kind": "chunks",
+    "chunks": [
+      {
+        "type": "block-start",
+        "index": 0,
+        "blockType": "text"
+      },
+      {
+        "type": "text-delta",
+        "index": 0,
+        "text": "financial research completed for ACME. The draft report and supporting artifacts are ready."
+      },
+      {
+        "type": "block-end",
+        "index": 0,
+        "block": {
+          "type": "text",
+          "text": "financial research completed for ACME. The draft report and supporting artifacts are ready."
+        }
+      },
+      {
+        "type": "usage",
+        "usage": {
+          "inputTokens": 48,
+          "outputTokens": 14
+        }
+      },
+      {
+        "type": "finish",
+        "reason": {
+          "kind": "stop"
+        }
+      }
+    ]
+  }
+]

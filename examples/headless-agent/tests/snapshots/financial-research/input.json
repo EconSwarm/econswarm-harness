@@ -1,0 +1,8 @@
+{
+  "steps": [
+    {
+      "op": "prompt",
+      "text": "Run a financial research workflow on ACME in semiconductors and return a report draft."
+    }
+  ]
+}

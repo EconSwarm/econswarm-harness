@@ -31,13 +31,13 @@ export function buildFinancialResearchWorkflow(input: FinancialResearchInput): F
     "const evidence = await agent('Collect public filings, news, and sector context for ' + args.topic, { label: 'evidence-collector', phase: 'Collect evidence' })",
     "phase('Run specialists')",
     "const [statementSummary, newsSummary, valuationSummary, riskList] = await parallel([",
-    "  () => agent('Analyze the financial statements for ' + args.topic + '\nEvidence:\n' + evidence, { label: 'statement-analysis', phase: 'Run specialists' }),",
-    "  () => agent('Attribute the recent news flow for ' + args.topic + '\nEvidence:\n' + evidence, { label: 'news-attribution', phase: 'Run specialists' }),",
-    "  () => agent('Produce a valuation view for ' + args.topic + '\nEvidence:\n' + evidence, { label: 'valuation-analysis', phase: 'Run specialists' }),",
-    "  () => agent('Review key risks for ' + args.topic + '\nEvidence:\n' + evidence, { label: 'risk-review', phase: 'Run specialists' }),",
+    "  () => agent('Analyze the financial statements for ' + args.topic + '\\nEvidence:\\n' + evidence, { label: 'statement-analysis', phase: 'Run specialists' }),",
+    "  () => agent('Attribute the recent news flow for ' + args.topic + '\\nEvidence:\\n' + evidence, { label: 'news-attribution', phase: 'Run specialists' }),",
+    "  () => agent('Produce a valuation view for ' + args.topic + '\\nEvidence:\\n' + evidence, { label: 'valuation-analysis', phase: 'Run specialists' }),",
+    "  () => agent('Review key risks for ' + args.topic + '\\nEvidence:\\n' + evidence, { label: 'risk-review', phase: 'Run specialists' }),",
     '])',
     "phase('Write result')",
-    "const report = await agent('Write a concise investment report draft for ' + args.topic + '\nStatements:\n' + statementSummary + '\nNews:\n' + newsSummary + '\nValuation:\n' + valuationSummary + '\nRisks:\n' + riskList, { label: 'report-writer', phase: 'Write result' })",
+    "const report = await agent('Write a concise investment report draft for ' + args.topic + '\\nStatements:\\n' + statementSummary + '\\nNews:\\n' + newsSummary + '\\nValuation:\\n' + valuationSummary + '\\nRisks:\\n' + riskList, { label: 'report-writer', phase: 'Write result' })",
     'return {',
     '  topic: args.topic,',
     '  summary: String(report),',
@@ -50,7 +50,7 @@ export function buildFinancialResearchWorkflow(input: FinancialResearchInput): F
     "    { kind: 'report-draft', title: 'Draft report', content: String(report) },",
     '  ],',
     '  missingEvidence: [],',
-    '} satisfies FinancialResearchResult',
+    '}',
   ].join('\n')
   return { meta, script, args: input }
 }

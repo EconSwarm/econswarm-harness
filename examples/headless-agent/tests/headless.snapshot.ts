@@ -31,6 +31,8 @@ const ptyStreamExpected = join(ptyScenarioDir, 'stream-json.expected.jsonl')
 const ptyConfigPath = fileURLToPath(new URL('../pty.cordis.snapshot.yml', import.meta.url))
 const goalScenarioDir = join(snapshotsDir, 'goal-tools')
 const goalConfigPath = fileURLToPath(new URL('../goal.cordis.snapshot.yml', import.meta.url))
+const financialResearchScenarioDir = join(snapshotsDir, 'financial-research')
+const financialResearchConfigPath = fileURLToPath(new URL('../financial-research.cordis.snapshot.yml', import.meta.url))
 const retryScenarioDir = join(snapshotsDir, 'provider-retry')
 const retryConfigPath = fileURLToPath(new URL('../retry.cordis.snapshot.yml', import.meta.url))
 const compactionScenarioDir = join(snapshotsDir, 'compaction-recovery')
@@ -197,6 +199,15 @@ async function readPersistedLog(file: string): Promise<string> {
     decoded.push(await decompressZstdFrame(content.subarray(frame.start, frame.end)))
   }
   return Buffer.concat(decoded).toString('utf8')
+}
+
+async function readOptionalUtf8(file: string): Promise<string | undefined> {
+  try {
+    return await readFile(file, 'utf8')
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException | null)?.code === 'ENOENT') return undefined
+    throw error
+  }
 }
 
 async function persistedLogs(cwd: string, root: string = join(cwd, '.sessions')): Promise<PersistedLog[]> {
@@ -699,6 +710,107 @@ describe('headless stream-json snapshots', () => {
     const normalized = normalizeGoalStream(result.stdout, runCwd)
     if (refreshing) await writeFile(streamExpected, normalized)
     expect(normalized).toBe(await readFile(streamExpected, 'utf8'))
+  }, LOADER_SMOKE_TEST_TIMEOUT_MS)
+
+  it('replays a financial research workflow through the one-shot app', async () => {
+    const prompt = await scenarioPrompt(financialResearchScenarioDir, 'financial-research')
+    const streamExpected = join(financialResearchScenarioDir, 'stream-json.expected.jsonl')
+    const fixtureFiles = [
+      join(financialResearchScenarioDir, 'session.jsonl'),
+      ...[1, 2, 3, 4, 5, 6].map(index => join(financialResearchScenarioDir, `session.${index}.jsonl`)),
+    ]
+    let expectedSessions = await Promise.all(fixtureFiles.map(file => readOptionalUtf8(file)))
+    let runCwd = ''
+    const result = await runLoaderSmoke({
+      label: 'financial research headless stream-json snapshot',
+      tempDirPrefix: 'headless-snapshot-financial-research-',
+      binScript,
+      libBinScript: binScript,
+      configPath: financialResearchConfigPath,
+      binArgs: [financialResearchConfigPath, prompt],
+      tsconfigPath,
+      env: {
+        DSH_SNAPSHOT: 'replay',
+        DSH_SNAPSHOT_FILE: fixtureFiles[0],
+        DSH_SNAPSHOT_OVERRIDE: join(financialResearchScenarioDir, 'replay.override.json'),
+        DSH_SNAPSHOT_CHILD_FILES: fixtureFiles.slice(1).join(delimiter),
+        NODE_OPTIONS: [process.env.NODE_OPTIONS, '--disable-warning=ExperimentalWarning'].filter(Boolean).join(' '),
+      },
+      prepare: (cwd) => { runCwd = cwd },
+      inspect: async (cwd) => {
+        const logs = await persistedLogs(cwd)
+        expect(logs).toHaveLength(fixtureFiles.length)
+        const parent = logs.find(log => typeof log.header.parentSession !== 'string')
+        if (parent === undefined) throw new Error('financial research snapshot did not persist its parent session')
+        const children = logs.filter(log => typeof log.header.parentSession === 'string')
+          .sort((left, right) => Number(left.header.createdAt) - Number(right.header.createdAt))
+        expect(children).toHaveLength(fixtureFiles.length - 1)
+
+        const parentRecords = parseJsonl(parent.content)
+        const toolCalls = parentRecords
+          .filter(record => record.type === 'tool/call')
+          .map(record => (record.data as JsonObject | undefined)?.name)
+        expect(toolCalls).toEqual(['financial_research'])
+        const runStarts = parentRecords.filter(record => record.type === 'tool-financial-research/run-start')
+        expect(runStarts).toHaveLength(1)
+        expect(runStarts[0]?.data).toMatchObject({ topic: prompt })
+        const runEnds = parentRecords.filter(record => record.type === 'tool-financial-research/run-end')
+        expect(runEnds).toHaveLength(1)
+        expect((runEnds[0]?.data as JsonObject | undefined)?.artifactKinds).toEqual([
+          'evidence-bundle',
+          'statement-summary',
+          'news-summary',
+          'valuation-summary',
+          'risk-list',
+          'report-draft',
+        ])
+        expect(JSON.stringify(parentRecords)).toContain('financial research completed')
+
+        const actualSessions = [parent, ...children]
+        const actualContext = contextFromLogs(actualSessions.map(log => log.content))
+        if (refreshing) {
+          const baselines = actualSessions.map((actual, index) => expectedSessions[index] ?? actual.content)
+          const harvested = actualSessions.map((log): HarvestedLog => ({
+            id: String(log.header.id),
+            createdAt: Number(log.header.createdAt),
+            ...typeof log.header.parentSession === 'string'
+              ? { parentSession: log.header.parentSession }
+              : {},
+            content: log.content,
+          }))
+          const replacements = refreshFixtureReplacements(harvested, baselines)
+          expectedSessions = await Promise.all(actualSessions.map(async (actual, index) => {
+            const baseline = baselines[index]
+            const file = fixtureFiles[index]
+            if (baseline === undefined || file === undefined) {
+              throw new Error(`financial research snapshot has no fixture for persisted log ${index}`)
+            }
+            const stable = tokenizeSessionFixtureCwd(
+              stabilizeRefreshLog(actual.content, baseline, replacements, actualContext),
+            )
+            await writeFile(file, stable)
+            return stable
+          }))
+        }
+        if (expectedSessions.some(session => session === undefined)) {
+          throw new Error('financial research snapshot fixtures are missing; run with DSH_SNAPSHOT=refresh to create them')
+        }
+        const stableExpectedSessions = expectedSessions as string[]
+        const expectedContext = contextFromLogs(stableExpectedSessions)
+        for (const [index, actual] of actualSessions.entries()) {
+          const expected = stableExpectedSessions[index]
+          if (expected === undefined) throw new Error(`financial research snapshot has no fixture for persisted log ${index}`)
+          expect(scrubRequestHeaders(normalizeSessionLog(actual.content, actualContext)))
+            .toBe(scrubRequestHeaders(normalizeSessionLog(expected, expectedContext)))
+        }
+      },
+    })
+
+    expect(result.stderr).toBe('')
+    const normalized = normalizeHeadlessStream(result.stdout, runCwd)
+    if (refreshing) await writeFile(streamExpected, normalized)
+    expect(normalized).toBe(await readFile(streamExpected, 'utf8'))
+    expect(normalized).toContain('financial research completed')
   }, LOADER_SMOKE_TEST_TIMEOUT_MS)
 
   it('replays two fresh Ralph rounds through the one-shot app', async () => {

@@ -56,7 +56,7 @@ function stopReasonError(result: WorkflowResult): string | undefined {
 }
 
 function renderOutput(output: ToolFinancialResearchOutput): string {
-  return renderFinancialResearchSummary(output.result as FinancialResearchResult)
+  return renderFinancialResearchSummary(output.result as unknown as FinancialResearchResult)
 }
 
 export function apply(ctx: Context): void {

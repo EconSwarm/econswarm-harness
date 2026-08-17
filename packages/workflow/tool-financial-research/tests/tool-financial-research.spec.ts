@@ -4,19 +4,26 @@ import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
 import ToolRuntime from '@deepseek-ai/dsh-tools'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import type { Agent } from '@deepseek-ai/dsh-agent'
-import { WorkflowEngine, WorkflowRunId } from '@deepseek-ai/dsh-workflow'
+import { CallId, type ContentBlock } from '@deepseek-ai/dsh-llm'
+import {
+  WorkflowEngine,
+  WorkflowRunId,
+  type WorkflowResult,
+  type WorkflowRun,
+  type WorkflowStartRequest,
+} from '@deepseek-ai/dsh-workflow'
 import * as financialResearchTool from '../src/index.ts'
 
 class StubEngine extends WorkflowEngine {
-  requests = []
-  settle!: (result: { value: unknown; stopReason: 'completed'; agentsStarted: number }) => void
+  readonly requests: WorkflowStartRequest[] = []
+  settle!: (result: WorkflowResult) => void
 
-  start(request) {
+  start(request: WorkflowStartRequest): WorkflowRun {
     this.requests.push(request)
     return {
       id: WorkflowRunId('finance-run-1'),
       meta: request.meta,
-      result: new Promise(resolve => { this.settle = resolve }),
+      result: new Promise<WorkflowResult>((resolve) => { this.settle = resolve }),
       cancel() {},
       async dispose() {},
     }
@@ -30,20 +37,21 @@ describe('dsh-tool-financial-research', () => {
     await ctx.plugin(ToolRuntime)
     await ctx.plugin(StubEngine)
     await ctx.plugin(financialResearchTool)
+    const engine = ctx.workflowEngine as StubEngine
     const session = Session.create(SessionId('parent'))
     const parent = { id: session.id, options: {}, session } as unknown as Agent
 
     const pending = ctx.tools.execute({
-      callId: 'call-1',
+      callId: CallId('call-1'),
       signal: new AbortController().signal,
       name: 'financial_research',
       arguments: { topic: 'Evaluate ACME', outputFormat: 'report-draft' },
       agent: parent,
     })
 
-    await vi.waitFor(() => { expect(ctx.workflowEngine.requests).toHaveLength(1) })
-    expect(ctx.workflowEngine.requests[0].meta.name).toBe('financial-research')
-    ctx.workflowEngine.settle({
+    await vi.waitFor(() => { expect(engine.requests).toHaveLength(1) })
+    expect(engine.requests[0]?.meta.name).toBe('financial-research')
+    engine.settle({
       value: {
         topic: 'Evaluate ACME',
         summary: 'ACME is interesting.',
@@ -56,7 +64,9 @@ describe('dsh-tool-financial-research', () => {
 
     const result = await pending
     expect(result.isError).toBe(false)
-    expect(result.content[0].text).toContain('financial research completed')
+    const firstBlock: ContentBlock | undefined = result.content[0]
+    expect(firstBlock?.type).toBe('text')
+    expect(firstBlock && firstBlock.type === 'text' ? firstBlock.text : '').toContain('financial research completed')
     expect(session.events.map(event => event.type)).toEqual([
       'tool-financial-research/run-start',
       'tool-financial-research/run-end',

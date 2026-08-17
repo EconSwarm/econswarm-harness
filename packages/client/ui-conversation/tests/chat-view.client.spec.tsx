@@ -5,7 +5,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, within } from '@testing-library/react'
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import type {
   AssistantMessageNode, CommandNode, CompactionSummaryNode, ConversationNode, ConversationSnapshot,
   ModelRetryNode, RunningToolCall, SessionId, SessionListState, ToolCallBlock, ToolResultNode, TurnErrorNode,
@@ -954,7 +954,7 @@ describe('ChatView', () => {
     const block = toolResult(3, 'a')
     const h = makeHarness({ nodes: [block] })
     const calls: { key: string; owner: object; entryKey?: string }[] = []
-    h.props.renderSlot = ((key: string, owner: object, opts?: { entryKey?: string; fallback?: React.ReactNode }) => {
+    h.props.renderSlot = ((key: string, owner: object, opts?: { entryKey?: string; fallback?: ReactNode }) => {
       calls.push({ key, owner, ...(opts?.entryKey !== undefined ? { entryKey: opts.entryKey } : {}) })
       return opts?.fallback ?? null
     })

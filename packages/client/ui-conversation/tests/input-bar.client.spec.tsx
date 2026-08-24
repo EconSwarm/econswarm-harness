@@ -22,6 +22,7 @@ import type { DraftAttachmentId } from '../src/client/input/contract.ts'
 import { InputBar } from '../src/client/skeleton/InputBar.tsx'
 import type { InputBarProps } from '../src/client/skeleton/InputBar.tsx'
 import { zh } from '../src/client/locales.ts'
+import type { ReactNode } from 'react'
 
 afterEach(cleanup)
 
@@ -52,10 +53,10 @@ function snapshotOf(overrides: Partial<ConversationSnapshot> = {}): Conversation
 }
 
 interface BenchOptions {
-  planEntry?: React.ReactNode
+  planEntry?: ReactNode
   /** The `plan` projection value the standard-kit useProjection serves. */
   plan?: { active: boolean; pending: boolean }
-  modelEntry?: React.ReactNode
+  modelEntry?: ReactNode
   /** Hot text-ref lexicon (injects a minimal slash stub exposing only lexicon()). */
   lexicon?: ReadonlyMap<'/' | '@', readonly string[]>
   permissions?: { options: { value: string; name: string; description?: string }[]; currentValue: string }
@@ -84,10 +85,10 @@ interface BenchOptions {
   placeholder?: string
   t?: InputBarProps['t']
   command?: (line: string) => Promise<boolean>
-  accessory?: React.ReactNode
-  overlay?: React.ReactNode
-  leftItems?: React.ReactNode
-  rightItems?: React.ReactNode
+  accessory?: ReactNode
+  overlay?: ReactNode
+  leftItems?: ReactNode
+  rightItems?: ReactNode
   attachments?: readonly ComposerAttachment[]
   addImages?: (files: readonly File[]) => string | null
   commandMenuOpen?: boolean
